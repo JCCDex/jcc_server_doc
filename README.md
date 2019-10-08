@@ -94,39 +94,38 @@ HTTP请求
 
 查询第一页:
 
-GET [exHost]/exchange/tx/:address/
+GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=0&s=100&t=OfferCreate,OfferCancel,OfferAffect&w=
 
 查询下一页:
 
-GET [exHost]/exchange/tx/:address/?ledger=&seq=
+GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=1&s=100&t=OfferCreate,OfferCancel,OfferAffect&w=
 
 请求参数:
 
 参数名|参数类型|是否必须|描述
 --|:--:|--:|--:
-address|String|是|钱包地址
-ledger|String|否|区块账本编号，从第二页开始需要，该值由上一页查询返回
-seq|String|否|交易序列号，从第二页开始需要，该值由上一页查询返回
+p|Number|是|页数，从0开始
+s|Number|否|每页显示条数，10/20/50/100四种选择，缺省20
+t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，一共可能的类型有：OfferCreate、OfferAffect、OfferCancel、Send、Receive五种）
+w|String|是|钱包地址（必须传值）
 
 返回参数:
 
 参数名|参数类型|描述
 --|:--:|--:
-ledger|Number|下次请求的账本编号，
-seq|Number|下次请求的交易序列号
-hash|String|交易hash,   如果是用"/"分割，那么左边表示主动成交方，右边表示被动成交方
-time|Timestamp|交易时间(秒)
-type|String|买、卖类型 sell-卖 buy-买
-pairs|String|交易对
-amount|String|交易数量
-sum|String|交易总价格
-price|String|单价
-status|String|交易状态 offer_bought-主动成交 offer_funded-被动成交 offer_partially_funded-部分成交 offer_cancelled-取消挂单 offer_created-创建挂单 
+type|String|交易类型，字符串（OfferCreate：创建委托；OfferAffect：被动成交；OfferCancel：撤消委托）
+time|Number|交易发生时间，整型（可以换算成日期时间字符串）
+past|Number|该交易距离查询时过去的秒数，整型
+hash|String|该交易的哈希，64位字符串
+block|Number|区块高度，整型
+fee|String|交易gas费用，数字类型的字符串（OfferAffect和Receive时，fee=““）
+success|String|交易是否成功（tesSUCCESS表示成功）
+seq|Number|交易序号，整型（对于OfferAffect和Receive，该字符无意义）
 
 返回示例
 
 ```json
-{"code":"0","data":{"marker":{"ledger":11588678,"seq":4},"transactions":[{"hash":"D166357BF8E0FBAB5B450379A0DB19BA55A773075E0F52B06B7CD6A8406E8219","time":1546070620,"type":"sell","pairs":"MOAC/CNT","amount":"818","sum":"3272","price":"4","status":"offer_cancelled"},{"hash":"DE8E6E919B047F42AC76AF9DA19578042B78FD5E0D26C37BACE4679FF61FA72D","time":1546051770,"type":"sell","pairs":"MOAC/CNT","amount":"818","sum":"3272","price":"4","status":"offer_created"},{"hash":"B3002E48CCCF63845E72EDADFD4C1F05BB18D1E8781CE1B07B8E2E5AC7FCB6C5","time":1546051670,"type":"buy","pairs":"ETH/CNT","amount":"0.01","sum":"7.97","price":"797","status":"offer_cancelled"},{"hash":"19AE039FDF6DFF6CA1F51D84CC1F34197C32E5366F0D8DD4491F75C7201065FD","time":1546050330,"type":"buy","pairs":"ETH/CNT","amount":"0.01","sum":"7.97","price":"797","status":"offer_created"},{"hash":"C0781571CDACC228C475034198D0D9CB238DFA5EDD43EE8575E9CE51D47C66D9","time":1545900180,"type":"buy","pairs":"SWTC/CNT","amount":"1000000","sum":"3050","price":"0.00305","status":"offer_cancelled"},{"hash":"89DF2578BFCC39BE7815DE9FEE0737834947C9A99410D401098AD8526EF58878/8AE6E7D1C916AA9BB4983ABCC2CE98CE9FD57E8E7E66FDCD1C0FEFF19B8A3A81/undefined","time":1545899990,"type":"sell","pairs":"MOAC/CNT","amount":"26.7","sum":"81.7019999999999","price":"3.05999999999999625468","status":"offer_bought","counterparty":{"account":"jnpCL7vYAnAhjdQR7iVS4yeJ6t2tbw3KNp","seq":72,"hash":"8AE6E7D1C916AA9BB4983ABCC2CE98CE9FD57E8E7E66FDCD1C0FEFF19B8A3A81"}},{"hash":"89DF2578BFCC39BE7815DE9FEE0737834947C9A99410D401098AD8526EF58878/610A779839F3481D49493AEC1B2CADDBD217C2F94B22CA3591E13B132C605581/undefined","time":1545899990,"type":"sell","pairs":"MOAC/CNT","amount":"1.38","sum":"4.2366","price":"3.07","status":"offer_bought","counterparty":{"account":"jJ2XV8PWwdcHNXb5kAt9LutAq45Lqrt3DS","seq":6405,"hash":"610A779839F3481D49493AEC1B2CADDBD217C2F94B22CA3591E13B132C605581"}},{"hash":"89DF2578BFCC39BE7815DE9FEE0737834947C9A99410D401098AD8526EF58878/C428557458D18DAD7F053B1FA85E29C7117CEDD3404C57C050C7ECD5B2AB0D6F/undefined","time":1545899990,"type":"sell","pairs":"MOAC/CNT","amount":"600","sum":"1824","price":"3.04","status":"offer_bought","counterparty":{"account":"jMP1BwtzxpqnxMYt5oWzCPjiSGekrw5Kkj","seq":92,"hash":"C428557458D18DAD7F053B1FA85E29C7117CEDD3404C57C050C7ECD5B2AB0D6F"}},{"hash":"89DF2578BFCC39BE7815DE9FEE0737834947C9A99410D401098AD8526EF58878/FC542B141AE876A04DE0BDB331CCD319754365AF2BE3BF31430E168272D2DB7D/undefined","time":1545899990,"type":"sell","pairs":"MOAC/CNT","amount":"180.07","sum":"547.4128","price":"3.04","status":"offer_bought","counterparty":{"account":"jpsus5muo2pt4MJiY98eXMDMGyQQiqen17","seq":11,"hash":"FC542B141AE876A04DE0BDB331CCD319754365AF2BE3BF31430E168272D2DB7D"}},{"hash":"89DF2578BFCC39BE7815DE9FEE0737834947C9A99410D401098AD8526EF58878/1A8215FB7DCA9F09A6BC02085B2E9B808EAABB4FE7E32B79B27028A061653098/undefined","time":1545899990,"type":"sell","pairs":"MOAC/CNT","amount":"9.85","sum":"30.0425","price":"3.05","status":"offer_bought","counterparty":{"account":"jpw9GNoe4M1nNoof78yWimg1jFvAubvuFv","seq":17,"hash":"1A8215FB7DCA9F09A6BC02085B2E9B808EAABB4FE7E32B79B27028A061653098"}},{"hash":"40406805D40503AB867313511DE2D0D4125B4B3A2D582F0E72750C835597A122/40406805D40503AB867313511DE2D0D4125B4B3A2D582F0E72750C835597A122/4548","time":1545838450,"type":"buy","pairs":"MOAC/CNT","amount":"818","sum":"2454","price":"3","status":"offer_funded","counterparty":{"account":"jMbmoPA3QcWKoDQrhGdiykVkqJPe4cqYnY","seq":200,"hash":"40406805D40503AB867313511DE2D0D4125B4B3A2D582F0E72750C835597A122"}},{"hash":"74ECD94DDF10AB05EC9A3BE5AD0F66C9FC9F429A6990B419B9EDC0744F84BAAD/74ECD94DDF10AB05EC9A3BE5AD0F66C9FC9F429A6990B419B9EDC0744F84BAAD/4549","time":1545806620,"type":"buy","pairs":"MOAC/CNT","amount":"818","sum":"2593.06","price":"3.17","status":"offer_funded","counterparty":{"account":"j9irCqYkPgsQhNSeBpuyjsQTsqSdkVn1Az","seq":26360,"hash":"74ECD94DDF10AB05EC9A3BE5AD0F66C9FC9F429A6990B419B9EDC0744F84BAAD"}},{"hash":"B1BD241FA6863AD626B7FA13363EABABF88064780F0FA8F54F7F430422D5C135","time":1545795830,"type":"buy","pairs":"MOAC/CNT","amount":"818","sum":"2593.06","price":"3.17","status":"offer_created"},{"hash":"1DA1BAD815E0D029EA665B271C6E3B884CD0E91F1658CA8E542342D30FDDC337","time":1545734060,"type":"buy","pairs":"MOAC/CNT","amount":"818","sum":"2454","price":"3","status":"offer_created"}]},"msg":"获取历史交易成功","isActive":true}
+{"code":"0","data":{"list":[{"type":"OfferCancel","time":621523070,"hash":"9F1D72707EFBA863B8DAD487857E4D7B4E54E90CF6348BBEA5F32509C4390DE4","block":13836328,"fee":0.00001,"success":"tesSUCCESS","seq":37,"offerSeq":36,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.0414"},"past":2310561,"flag":2},{"type":"OfferCreate","time":621523030,"hash":"310AC09A482FBC6D2BD6322C1BD5219D9CE782ABA93FDBFEE9D3851F5386AC6F","block":13836324,"fee":0.00001,"success":"tesSUCCESS","seq":36,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.0414"},"takerGetsFact":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysFact":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.0414"},"past":2310601,"flag":2},{"type":"OfferCancel","time":621520840,"hash":"A23A9FB001A5C4008C5739942037777031F51CADF3DCC93FFC491F067D49B996","block":13836105,"fee":0.00001,"success":"tesSUCCESS","seq":35,"offerSeq":11,"takerGets":{"currency":"SWTC","issuer":"","value":"66.66"},"takerPays":{"currency":"JJCC","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"6666"},"past":2312791,"flag":1},{"type":"OfferAffect","time":621311160,"hash":"A64C561C2EE1D78E8E48C59B21A585B915B2F7CADBFB21F979C0326696603ABB","block":13815137,"fee":"","success":"tesSUCCESS","seq":34,"account":"jMWE1CMpnD5rzgrXfkmjRRLRt3kt5GVdSK","offerSeq":34,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsMatch":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysMatch":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"past":2522471,"flag":2},{"type":"OfferCreate","time":621310200,"hash":"7EC01CEDD939FFE79BF4177942DD1F7F9CC03224B766B9F7C0C98332D27F2F64","block":13815041,"fee":0.00001,"success":"tesSUCCESS","seq":34,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsFact":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysFact":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"past":2523431,"flag":2},{"type":"OfferAffect","time":621309510,"hash":"26CBE76209B939DFAAD8BB451928B1101A43377AD7ED9B2DD2B76C7DC3039E84","block":13814972,"fee":"","success":"tesSUCCESS","seq":33,"account":"jKbQJvFW1xhi8RdfvYt7VZcpmr2X9x2puE","offerSeq":33,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsMatch":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysMatch":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"past":2524121,"flag":2},{"type":"OfferCreate","time":621308630,"hash":"B33872232568553D498F3D1B37F26E31708F443EC485EBAD77FAE64397307B43","block":13814884,"fee":0.00001,"success":"tesSUCCESS","seq":33,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsFact":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysFact":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"past":2525001,"flag":2},{"type":"OfferAffect","time":621137450,"hash":"C95EA6945D0D91ADF1CADD0730A1BECA3BA452033F9AED15CF3EBC65303ACF4F","block":13797766,"fee":"","success":"tesSUCCESS","seq":32,"account":"jJGpN9BdFHejqFkkb3vu69W1B4gfEq1YhM","offerSeq":32,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsMatch":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysMatch":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"matchFlag":3,"past":2696181,"flag":2},{"type":"OfferCreate","time":621137370,"hash":"15C905004B68FB2763E2DB70A78C1F9475EC8EA5EB34A4DA9CCE5F87E832E535","block":13797758,"fee":0.00001,"success":"tesSUCCESS","seq":32,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"takerGetsFact":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysFact":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00439"},"past":2696261,"flag":2},{"type":"OfferAffect","time":620822530,"hash":"B4002942484153FD12643B68D5D3B83DDC33BC1A038AC3A9F28C8ECCCCDFACBD","block":13766274,"fee":"","success":"tesSUCCESS","seq":27,"account":"jMSvQ6n5oAR88MMgF93C3sU819UVw7VpDQ","offerSeq":27,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00466000000000001"},"takerGetsMatch":{"currency":"SWTC","issuer":"","value":"1"},"takerPaysMatch":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.00466000000000001"},"past":3011101,"flag":2}],"count":49},"msg":"成功"}
 
 ```
 
@@ -136,37 +135,38 @@ HTTP请求
 
 查询第一页:
 
-GET [exHost]/exchange/payments/:address/
+GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=0&s=10&t=Receive,Send&w=
 
 查询下一页:
 
-GET [exHost]/exchange/payments/:address/?ledger=&seq=
+GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=1&s=10&t=Receive,Send&w=
 
 请求参数:
 
 参数名|参数类型|是否必须|描述
 --|:--:|--:|--:
-address|String|是|钱包地址
-ledger|String|否|区块账本编号，从第二页开始需要，该值由上一页查询返回
-seq|String|否|交易序列号，从第二页开始需要，该值由上一页查询返回
+p|Number|是|页数，从0开始
+s|Number|否|每页显示条数，10/20/50/100四种选择，缺省20
+t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，一共可能的类型有：OfferCreate、OfferAffect、OfferCancel、Send、Receive五种）
+w|String|是|钱包地址（必须传值）
 
 返回参数:
 
 参数名|参数类型|描述
 --|:--:|--:
-ledger|Number|下次请求的账本编号，
-seq|Number|下次请求的交易序列号
-hash|String|交易hash,
-time|Timestamp|交易时间(秒)
-sender|String|发送方
-receiver|String|接收方
-amount|String|交易数量
-result|String|***该字段无效,不用处理***
+type|String|交易类型，转账为（Send：支付；Receive：收到）
+time|Number|交易发生时间，整型（可以换算成日期时间字符串）
+past|Number|该交易距离查询时过去的秒数，整型
+hash|String|该交易的哈希，64位字符串
+block|Number|区块高度，整型
+fee|String|交易gas费用，数字类型的字符串（OfferAffect和Receive时，fee=““）
+success|String|交易是否成功（tesSUCCESS表示成功）
+seq|Number|交易序号，整型（对于OfferAffect和Receive，该字符无意义）
 
 返回示例
 
 ```json
-{"code":"0","data":{"marker":{"ledger":11490452,"seq":6},"transactions":[{"hash":"E0B3FA8A0438F15C8C8D068B383D19E3F5E1F633BAF756F4509435DF8178A35F","time":1546842750,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"jLUkoiBvewNDvrJMR7q96s67WgoGjmttPr","currency":"MOAC","amount":"194","result":false},{"hash":"8C6796AD7DAC6A48A02C061DA571BA64DC3B3808575BF3552310043ABF274DB4","time":1546842270,"sender":"jG9ntUTuBKqDURPUqbGYZRuRDVzPY6bpxL","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"MOAC","amount":"338","result":false},{"hash":"7415E157D0948B3B8EB47F47DD94076085B65CC3D38A91B552946226B8037096","time":1546323650,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"j991JxDsLeHJp5e8AxggmodTNzZMCybtQJ","currency":"CNT","amount":"7000","result":false},{"hash":"006F38364E64CE3DADE02CAE0576A5A5A613092BE44ED35A1B2D814201577801","time":1545298730,"sender":"jGuN8i25pC14g4gdWkbyAqJ64L7w9z7yN5","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"HJT","amount":"1","result":false},{"hash":"91FF81AB4DE7E640C9D757E6F953B73A7FD6671BB2535EAC807F16181DD5EF34","time":1545298120,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"jGuN8i25pC14g4gdWkbyAqJ64L7w9z7yN5","currency":"HJT","amount":"5","result":false},{"hash":"BB39EBE6CC7AEFA7FB7E61B8AC0C0DFD9C71A99F0EC0D412EA2AE8D51E460BF9","time":1545119220,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"jUkqDXufgPLF2nxQKdu7gGnvXvoKHLNu6x","currency":"SWTC","amount":"1","result":false},{"hash":"C5FC338DBF28AA189F6EBA5F87A5B535C0D77DC93AACB5B1386DFB814D556E9C","time":1545118920,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"jG9ntUTuBKqDURPUqbGYZRuRDVzPY6bpxL","currency":"MOAC","amount":"1","result":false},{"hash":"0000F702471E659FA841DD934B1BDD1A6E0E7561B94E8D6F3570AB328EDC5A04","time":1545118640,"sender":"jG9ntUTuBKqDURPUqbGYZRuRDVzPY6bpxL","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"MOAC","amount":"1","result":false},{"hash":"D68106E33DF258AEAA1AECEDC0570F8A664057C7C92FC20EB9B441F8597F14FE","time":1545013710,"sender":"jDu7umDxKxeaHoj7eNdUn8YsGWTHZSuEGL","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"BIZ","amount":"2","result":false},{"hash":"B1564ED23112A396621AAB8F71E1FDAFDDFEB56EC5A00FE44B3713C24803A770","time":1545013380,"sender":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","receiver":"jDu7umDxKxeaHoj7eNdUn8YsGWTHZSuEGL","currency":"BIZ","amount":"1","result":false},{"hash":"CBB5509682ABD998789E979942F58E07D9C36E8BB9BC5F190566AD68C1B71980","time":1545013110,"sender":"jDu7umDxKxeaHoj7eNdUn8YsGWTHZSuEGL","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"BIZ","amount":"1","result":false},{"hash":"957F315F85E0C4EA7029B1A8B6EAF1568480867DFFACD3E362641D5E37B1C0E5","time":1544788830,"sender":"jG9ntUTuBKqDURPUqbGYZRuRDVzPY6bpxL","receiver":"jHXA8QvnogEw3exos7V2t3UXZmDWhDgHQT","currency":"MOAC","amount":"1","result":false}]},"msg":"获取历史交易成功","isActive":true}
+{"code":"0","data":{"list":[{"type":"Receive","time":623152620,"hash":"445821D60F9294E4ACF911D95166320D2F8EFFC6B4C6C133701B53272684D166","block":13999231,"fee":"","success":"tesSUCCESS","seq":97,"account":"jHEnnKkRcws7sm7kt4hLyKfmhkx6U58Gn","amount":{"currency":"JJCC","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"2835"},"memos":[{"Memo":{"MemoData":"E8BF90E7BBB4E5B7A5E4BD9CE694AFE68C81"}}],"past":683257},{"type":"Receive","time":620999690,"hash":"3B5140997969496CCFD119E545C7B6B885D3EB8D20CCB5D66FD84FB1DF50E8AD","block":13783990,"fee":"","success":"tesSUCCESS","seq":76,"account":"jHEnnKkRcws7sm7kt4hLyKfmhkx6U58Gn","amount":{"currency":"SWTC","issuer":"","value":"3091"},"memos":[{"Memo":{"MemoData":"E5BC80E6BA90E9A1B9E79BAEE694B6E585A5E58886E9858D33303931"}}],"past":2836187},{"type":"Receive","time":617358920,"hash":"A9A751A33F1E664FC902B8BE6790590E2A06625312A665EEDEEBCA8B08C540B7","block":13419913,"fee":"","success":"tesSUCCESS","seq":728,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"200"},"memos":[{"Memo":{"MemoData":"323030","MemoType":"737472696E67"}}],"past":6476957},{"type":"Receive","time":616312710,"hash":"3C13CEE11C9149D821B62410987C35CAE388636DB52029A8326ADADACD0BE223","block":13315292,"fee":"","success":"tesSUCCESS","seq":724,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"3"},"memos":[{"Memo":{"MemoData":"32","MemoType":"737472696E67"}}],"past":7523167},{"type":"Receive","time":616303500,"hash":"5126DE53C550C3014BCB50FD9BA5633961CDE5D1ACE701C7E907C04E7D649649","block":13314371,"fee":"","success":"tesSUCCESS","seq":723,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"2"},"memos":[{"Memo":{"MemoData":"32","MemoType":"737472696E67"}}],"past":7532377},{"type":"Send","time":615120220,"hash":"0632034CC6F3B77C481D010427409CF7F253A88B40649668EB767EE6BE167986","block":13196043,"fee":0.00001,"success":"tesSUCCESS","seq":9,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"0.1"},"past":8715657},{"type":"Send","time":615118750,"hash":"30F512064CC3972EE90043CF3667AB64413710BC383EBD89F808F18AA6F2B839","block":13195896,"fee":0.00001,"success":"tesSUCCESS","seq":8,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"JJCC","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"1"},"past":8717127},{"type":"Receive","time":615118490,"hash":"0118BF3027EAFAC2102D9EB11AC9D8CE6E1C43235317294411B0B4245A71AB63","block":13195870,"fee":"","success":"tesSUCCESS","seq":691,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"JJCC","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"1"},"past":8717387},{"type":"Send","time":613486000,"hash":"4DD53AF5BFB511771AE821C8FA1A56BA4B5810A27348EF0F7FA962D54EE023C7","block":13032621,"fee":0.00001,"success":"tesSUCCESS","seq":2,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"0.00001"},"past":10349877},{"type":"Receive","time":611997270,"hash":"8F9B6C706BE43FE5F8CE9DD5846324C2C21ADCBC6CB4C211C50D74EA82998946","block":12883748,"fee":"","success":"tesSUCCESS","seq":545,"account":"jngGKZEvkKYbeXqajh4A9gbZvSuXonV2nc","amount":{"currency":"SWTC","issuer":"","value":"2"},"past":11838607}],"count":12},"msg":"成功"}
 
 ```
 
@@ -176,30 +176,32 @@ HTTP请求
 
 查询第一页:
 
-GET [exHost]/exchange/orders/:address/:page
+GET https://explorer.jccdex.cn/wallet/offer/:uuid?p=0&s=100&w=
 
 请求参数:
 
 参数名|参数类型|是否必须|描述
 --|:--:|--:|--:
-address|String|是|钱包地址
-page|String|是|页码，该字段暂时无效,可以随便传，但是必须要有
+p|Number|是|页数，从0开始
+s|Number|否|每页显示条数，可以不传值，10/20/50/100四种选择，缺省20
+w|String|是|钱包地址（必须传值）
 
 返回参数:
 
 参数名|参数类型|描述
 --|:--:|--:
-type|String|类型 buy-买 sell-卖
-pair|String|交易对
-price|String|价格
-amount|String|交易数量
-sequence|String|交易序列号，用于取消挂单使用
-passive|String|***该字段无效，不用处理***
+time|Number|委托单的挂单时间（所属区块的时间），整型
+past|Number|距离现在过去的秒数，整型
+hash|String|委托单的挂单哈希值，64位字符串
+block|Number|区块高度，整型
+flag|Number|委托单性质，买/卖，整型（1:买；2:卖；0:未知）
+takerGets|JSON|挂单付出的币种和数量，json对象
+takerPays|JSON|挂单得到的币种和数量，json对象
 
 返回示例
 
 ```json
-{"code":"0","data":[{"type":"buy","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.001000","amount":"1.000000","sequence":4464,"passive":false},{"type":"sell","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.100000","amount":"1.000000","sequence":4465,"passive":false},{"type":"buy","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.001000","amount":"1.000000","sequence":4492,"passive":false},{"type":"buy","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.001000","amount":"1.000000","sequence":4490,"passive":false},{"type":"buy","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.001000","amount":"1.000000","sequence":4491,"passive":false},{"type":"buy","pair":"SWT/CNY+jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","price":"0.004000","amount":"300000.000000","sequence":4557,"passive":false}],"msg":"获得挂单列表成功","isActive":true}
+{"code":"0","data":{"list":[{"time":623149880,"hash":"6E3D45E77EB20D73439D10958AF28A648DC49302FEE1212BB4D5E010624F554D","block":13998957,"seq":44,"takerGets":{"currency":"SWTC","issuer":"","value":"111"},"takerPays":{"currency":"JPG","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"111"},"past":686208,"flag":1},{"time":622977270,"hash":"A784A26BCBC7FA799D3389D3574E18E4E62F8907CC335A9797BD45003B187D2B","block":13981696,"seq":43,"takerGets":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.001"},"takerPays":{"currency":"SWTC","issuer":"","value":"1"},"past":858818,"flag":1},{"time":622976990,"hash":"9ED4D308566DFA81068A8ECAB7BB146ABD9529A8A0C6FD2D10A7ADBBFA8F373B","block":13981668,"seq":42,"takerGets":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.001"},"takerPays":{"currency":"SWTC","issuer":"","value":"1"},"past":859098,"flag":1},{"time":621917920,"hash":"73D82F74D9B4F0AAFF209BE60ABA750774206BDDE08FADCA5772C21437FD69AB","block":13875761,"seq":40,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"CNY","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"10000"},"past":1918168,"flag":2},{"time":621574520,"hash":"3B1CA23CD1B13E3591C8FFFA2EF6D732DD203DCBCB0EE7ADC4B1B0E020C367E6","block":13841421,"seq":39,"takerGets":{"currency":"SWTC","issuer":"","value":"1"},"takerPays":{"currency":"JCADT","issuer":"jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or","value":"0.1"},"past":2261568,"flag":2}],"count":5},"msg":"成功"}
 
 ```
 ### 6 获取交易序列号(前端签名需要)
