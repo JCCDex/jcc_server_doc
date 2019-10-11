@@ -106,7 +106,7 @@ GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=1&s=100&t=OfferCreate,OfferC
 --|:--:|--:|--:
 p|Number|是|页数，从0开始
 s|Number|否|每页显示条数，10/20/50/100四种选择，缺省20
-t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，一共可能的类型有：OfferCreate、OfferAffect、OfferCancel、Send、Receive五种）
+t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，历史交易用到的类型有：OfferCreate 创建委托、OfferAffect 被动成交、OfferCancel 撤消委托）
 w|String|是|钱包地址（必须传值）
 
 返回参数:
@@ -114,7 +114,7 @@ w|String|是|钱包地址（必须传值）
 参数名|参数类型|描述
 --|:--:|--:
 type|String|交易类型，字符串（OfferCreate：创建委托；OfferAffect：被动成交；OfferCancel：撤消委托）
-time|Number|交易发生时间，整型（可以换算成日期时间字符串）
+time|Number|交易发生时间，整型（可以换算成日期时间字符串new Date((time的值+946684800)*1000)）
 past|Number|该交易距离查询时过去的秒数，整型
 hash|String|该交易的哈希，64位字符串
 block|Number|区块高度，整型
@@ -147,7 +147,7 @@ GET https://explorer.jccdex.cn/wallet/trans/:uuid?p=1&s=10&t=Receive,Send&w=
 --|:--:|--:|--:
 p|Number|是|页数，从0开始
 s|Number|否|每页显示条数，10/20/50/100四种选择，缺省20
-t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，一共可能的类型有：OfferCreate、OfferAffect、OfferCancel、Send、Receive五种）
+t|String|否|交易类型（多个类型以逗号分隔，可以不传值，不传值表示查询所有类型，转账用到的类型有：Send(支付)、Receive(收到)）
 w|String|是|钱包地址（必须传值）
 
 返回参数:
@@ -155,7 +155,7 @@ w|String|是|钱包地址（必须传值）
 参数名|参数类型|描述
 --|:--:|--:
 type|String|交易类型，转账为（Send：支付；Receive：收到）
-time|Number|交易发生时间，整型（可以换算成日期时间字符串）
+time|Number|交易发生时间，整型（可以换算成日期时间字符串new Date((time的值+946684800)*1000))
 past|Number|该交易距离查询时过去的秒数，整型
 hash|String|该交易的哈希，64位字符串
 block|Number|区块高度，整型
@@ -190,7 +190,7 @@ w|String|是|钱包地址（必须传值）
 
 参数名|参数类型|描述
 --|:--:|--:
-time|Number|委托单的挂单时间（所属区块的时间），整型
+time|Number|委托单的挂单时间（所属区块的时间,换算当前时间new Date((time的值+946684800)*1000)），整型
 past|Number|距离现在过去的秒数，整型
 hash|String|委托单的挂单哈希值，64位字符串
 block|Number|区块高度，整型
